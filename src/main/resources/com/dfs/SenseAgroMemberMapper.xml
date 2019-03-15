@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dfs.mapper.SenseAgroMemberMapper" >
+  <resultMap id="BaseResultMap" type="com.dfs.entity.SenseAgroMember" >
+    <id column="member_id" property="memberId" jdbcType="INTEGER" />
+    <result column="member_name" property="memberName" jdbcType="VARCHAR" />
+    <result column="member_password" property="memberPassword" jdbcType="VARCHAR" />
+    <result column="member_avatar" property="memberAvatar" jdbcType="VARCHAR" />
+    <result column="member_modify_avatar" property="memberModifyAvatar" jdbcType="VARCHAR" />
+    <result column="member_sex" property="memberSex" jdbcType="INTEGER" />
+    <result column="member_nickname" property="memberNickname" jdbcType="VARCHAR" />
+    <result column="member_country" property="memberCountry" jdbcType="VARCHAR" />
+    <result column="member_province" property="memberProvince" jdbcType="VARCHAR" />
+    <result column="member_city" property="memberCity" jdbcType="VARCHAR" />
+    <result column="member_area" property="memberArea" jdbcType="VARCHAR" />
+    <result column="member_mobile" property="memberMobile" jdbcType="VARCHAR" />
+    <result column="member_openid" property="memberOpenid" jdbcType="VARCHAR" />
+    <result column="member_unionid" property="memberUnionid" jdbcType="VARCHAR" />
+    <result column="register_time" property="registerTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="is_banned" property="isBanned" jdbcType="INTEGER" />
+    <result column="register_from" property="registerFrom" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    member_id, member_name, member_password, member_avatar, member_modify_avatar, member_sex, 
+    member_nickname, member_country, member_province, member_city, member_area, member_mobile, 
+    member_openid, member_unionid, register_time, update_time, is_banned, register_from
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.dfs.model.SenseAgroMemberExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from sense_agro_member
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sense_agro_member
+    where member_id = #{memberId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByOpenId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from sense_agro_member
+    where member_openid = #{memberOpenid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByMobile" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from sense_agro_member
+    where member_mobile = #{memberMobile,jdbcType=VARCHAR}
+  </select>
+
+   <select id="selectByCondition" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from
+    sense_agro_member
+    where
+    is_banned = 0
+    <if test="nickname != null">
+      and member_nickname = #{nickname}
+    </if>
+    <if test="mobile != null">
+      and member_mobile = #{mobile}
+    </if>
+    <if test="regFrom != null">
+      and register_from = #{regFrom}
+    </if>
+    <if test="regTimeBegin != -1 and regTimeEnd != -1" >
+    and register_time between  #{regTimeBegin} and #{regTimeEnd}
+    </if>
+    ORDER BY register_time DESC
+    limit #{page} ,#{per}
+  </select>
+  <select id="total" resultType="java.lang.Integer">
+    select count(member_id) from
+    sense_agro_member
+    where
+    is_banned = 0
+    <if test="nickname != null">
+      and member_nickname = #{nickname}
+    </if>
+    <if test="mobile != null">
+      and member_mobile = #{mobile}
+    </if>
+    <if test="regFrom != null">
+      and register_from = #{regFrom}
+    </if>
+    <if test="regTimeBegin != -1 and regTimeEnd != -1" >
+    and register_time between  #{regTimeBegin} and #{regTimeEnd}
+    </if>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from sense_agro_member
+    where member_id = #{memberId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.dfs.model.SenseAgroMemberExample" >
+    delete from sense_agro_member
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.dfs.entity.SenseAgroMember" >
+    insert into sense_agro_member (member_id, member_name, member_password, 
+      member_avatar, member_modify_avatar, member_sex, 
+      member_nickname, member_country, member_province, 
+      member_city, member_area, member_mobile, 
+      member_openid, member_unionid, register_time, 
+      update_time, is_banned, register_from
+      )
+    values (#{memberId,jdbcType=INTEGER}, #{memberName,jdbcType=VARCHAR}, #{memberPassword,jdbcType=VARCHAR}, 
+      #{memberAvatar,jdbcType=VARCHAR}, #{memberModifyAvatar,jdbcType=VARCHAR}, #{memberSex,jdbcType=INTEGER}, 
+      #{memberNickname,jdbcType=VARCHAR}, #{memberCountry,jdbcType=VARCHAR}, #{memberProvince,jdbcType=VARCHAR}, 
+      #{memberCity,jdbcType=VARCHAR}, #{memberArea,jdbcType=VARCHAR}, #{memberMobile,jdbcType=VARCHAR}, 
+      #{memberOpenid,jdbcType=VARCHAR}, #{memberUnionid,jdbcType=VARCHAR}, #{registerTime,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=INTEGER}, #{isBanned,jdbcType=INTEGER}, #{registerFrom,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.dfs.entity.SenseAgroMember" >
+    insert into sense_agro_member
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="memberId != null" >
+        member_id,
+      </if>
+      <if test="memberName != null" >
+        member_name,
+      </if>
+      <if test="memberPassword != null" >
+        member_password,
+      </if>
+      <if test="memberAvatar != null" >
+        member_avatar,
+      </if>
+      <if test="memberModifyAvatar != null" >
+        member_modify_avatar,
+      </if>
+      <if test="memberSex != null" >
+        member_sex,
+      </if>
+      <if test="memberNickname != null" >
+        member_nickname,
+      </if>
+      <if test="memberCountry != null" >
+        member_country,
+      </if>
+      <if test="memberProvince != null" >
+        member_province,
+      </if>
+      <if test="memberCity != null" >
+        member_city,
+      </if>
+      <if test="memberArea != null" >
+        member_area,
+      </if>
+      <if test="memberMobile != null" >
+        member_mobile,
+      </if>
+      <if test="memberOpenid != null" >
+        member_openid,
+      </if>
+      <if test="memberUnionid != null" >
+        member_unionid,
+      </if>
+      <if test="registerTime != null" >
+        register_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="isBanned != null" >
+        is_banned,
+      </if>
+      <if test="registerFrom != null" >
+        register_from,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="memberId != null" >
+        #{memberId,jdbcType=INTEGER},
+      </if>
+      <if test="memberName != null" >
+        #{memberName,jdbcType=VARCHAR},
+      </if>
+      <if test="memberPassword != null" >
+        #{memberPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="memberAvatar != null" >
+        #{memberAvatar,jdbcType=VARCHAR},
+      </if>
+      <if test="memberModifyAvatar != null" >
+        #{memberModifyAvatar,jdbcType=VARCHAR},
+      </if>
+      <if test="memberSex != null" >
+        #{memberSex,jdbcType=INTEGER},
+      </if>
+      <if test="memberNickname != null" >
+        #{memberNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="memberCountry != null" >
+        #{memberCountry,jdbcType=VARCHAR},
+      </if>
+      <if test="memberProvince != null" >
+        #{memberProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="memberCity != null" >
+        #{memberCity,jdbcType=VARCHAR},
+      </if>
+      <if test="memberArea != null" >
+        #{memberArea,jdbcType=VARCHAR},
+      </if>
+      <if test="memberMobile != null" >
+        #{memberMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="memberOpenid != null" >
+        #{memberOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="memberUnionid != null" >
+        #{memberUnionid,jdbcType=VARCHAR},
+      </if>
+      <if test="registerTime != null" >
+        #{registerTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="isBanned != null" >
+        #{isBanned,jdbcType=INTEGER},
+      </if>
+      <if test="registerFrom != null" >
+        #{registerFrom,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+  <select id="countByExample" parameterType="com.dfs.model.SenseAgroMemberExample" resultType="java.lang.Integer" >
+    select count(*) from sense_agro_member
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dfs.entity.SenseAgroMember" >
+    update sense_agro_member
+    <set >
+      <if test="memberName != null" >
+        member_name = #{memberName,jdbcType=VARCHAR},
+      </if>
+      <if test="memberPassword != null" >
+        member_password = #{memberPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="memberAvatar != null" >
+        member_avatar = #{memberAvatar,jdbcType=VARCHAR},
+      </if>
+      <if test="memberModifyAvatar != null" >
+        member_modify_avatar = #{memberModifyAvatar,jdbcType=VARCHAR},
+      </if>
+      <if test="memberSex != null" >
+        member_sex = #{memberSex,jdbcType=INTEGER},
+      </if>
+      <if test="memberNickname != null" >
+        member_nickname = #{memberNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="memberCountry != null" >
+        member_country = #{memberCountry,jdbcType=VARCHAR},
+      </if>
+      <if test="memberProvince != null" >
+        member_province = #{memberProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="memberCity != null" >
+        member_city = #{memberCity,jdbcType=VARCHAR},
+      </if>
+      <if test="memberArea != null" >
+        member_area = #{memberArea,jdbcType=VARCHAR},
+      </if>
+      <if test="memberMobile != null" >
+        member_mobile = #{memberMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="memberOpenid != null" >
+        member_openid = #{memberOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="memberUnionid != null" >
+        member_unionid = #{memberUnionid,jdbcType=VARCHAR},
+      </if>
+      <if test="registerTime != null" >
+        register_time = #{registerTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="isBanned != null" >
+        is_banned = #{isBanned,jdbcType=INTEGER},
+      </if>
+      <if test="registerFrom != null" >
+        register_from = #{registerFrom,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where member_openid = #{memberOpenid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dfs.entity.SenseAgroMember" >
+    update sense_agro_member
+    set member_name = #{memberName,jdbcType=VARCHAR},
+      member_password = #{memberPassword,jdbcType=VARCHAR},
+      member_avatar = #{memberAvatar,jdbcType=VARCHAR},
+      member_modify_avatar = #{memberModifyAvatar,jdbcType=VARCHAR},
+      member_sex = #{memberSex,jdbcType=INTEGER},
+      member_nickname = #{memberNickname,jdbcType=VARCHAR},
+      member_country = #{memberCountry,jdbcType=VARCHAR},
+      member_province = #{memberProvince,jdbcType=VARCHAR},
+      member_city = #{memberCity,jdbcType=VARCHAR},
+      member_area = #{memberArea,jdbcType=VARCHAR},
+      member_mobile = #{memberMobile,jdbcType=VARCHAR},
+      member_openid = #{memberOpenid,jdbcType=VARCHAR},
+      member_unionid = #{memberUnionid,jdbcType=VARCHAR},
+      register_time = #{registerTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      is_banned = #{isBanned,jdbcType=INTEGER},
+      register_from = #{registerFrom,jdbcType=VARCHAR}
+    where member_id = #{memberId,jdbcType=INTEGER}
+  </update>
+</mapper>

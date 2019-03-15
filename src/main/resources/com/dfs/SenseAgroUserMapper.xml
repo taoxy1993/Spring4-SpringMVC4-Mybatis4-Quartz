@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dfs.mapper.SenseAgroUserMapper">
+	<resultMap id="BaseResultMap" type="com.dfs.entity.SenseAgroUser">
+		<id column="id" property="id" jdbcType="INTEGER"/>
+		<result column="specialist_id" property="specialistId" jdbcType="INTEGER"/>
+		<result column="add_time" property="addTime" jdbcType="INTEGER"/>
+		<result column="valid_time" property="validTime" jdbcType="INTEGER"/>
+		<result column="sessionId" property="sessionid" jdbcType="VARCHAR"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+    id, specialist_id, add_time, valid_time, sessionId
+  	</sql>
+	<select id="findUserByToken" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List"/>
+		from sense_agro_user
+		where sessionId = #{sessionId,jdbcType=VARCHAR}
+		and valid_time > #{nowTime,jdbcType=INTEGER}
+		order by add_time desc
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from sense_agro_user
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sense_agro_user
+    where id = #{id,jdbcType=INTEGER}
+  	</delete>
+	<insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.dfs.entity.SenseAgroUser">
+    insert into sense_agro_user (id, specialist_id, add_time, 
+      valid_time, sessionId)
+    values (#{id,jdbcType=INTEGER}, #{specialistId,jdbcType=INTEGER}, #{addTime,jdbcType=INTEGER}, 
+      #{validTime,jdbcType=INTEGER}, #{sessionid,jdbcType=VARCHAR})
+  	</insert>
+	<insert id="insertSelective" keyProperty="id" useGeneratedKeys="true" parameterType="com.dfs.entity.SenseAgroUser">
+		insert into sense_agro_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="specialistId != null">
+				specialist_id,
+			</if>
+			<if test="addTime != null">
+				add_time,
+			</if>
+			<if test="validTime != null">
+				valid_time,
+			</if>
+			<if test="sessionid != null">
+				sessionId,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="specialistId != null">
+				#{specialistId,jdbcType=INTEGER},
+			</if>
+			<if test="addTime != null">
+				#{addTime,jdbcType=INTEGER},
+			</if>
+			<if test="validTime != null">
+				#{validTime,jdbcType=INTEGER},
+			</if>
+			<if test="sessionid != null">
+				#{sessionid,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dfs.entity.SenseAgroUser">
+		update sense_agro_user
+		<set>
+			<if test="specialistId != null">
+				specialist_id = #{specialistId,jdbcType=INTEGER},
+			</if>
+			<if test="addTime != null">
+				add_time = #{addTime,jdbcType=INTEGER},
+			</if>
+			<if test="validTime != null">
+				valid_time = #{validTime,jdbcType=INTEGER},
+			</if>
+			<if test="sessionid != null">
+				sessionId = #{sessionid,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dfs.entity.SenseAgroUser">
+    update sense_agro_user
+    set specialist_id = #{specialistId,jdbcType=INTEGER},
+      add_time = #{addTime,jdbcType=INTEGER},
+      valid_time = #{validTime,jdbcType=INTEGER},
+      sessionId = #{sessionid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,102 @@
+<script src="WEB-INF/plugins/sockjs.js"></script>
+<script src="WEB-INF/plugins/stomp.js"></script>
+
+<script type="text/javascript">
+
+
+	var stomp,sock;
+
+
+	$(document).ready(function () {
+		if (window.WebSocket){
+			websocketConfig();
+		} else {
+			alert("錯誤","瀏覽器不支持websocket技術通訊.");
+		}
+	});
+
+
+
+	//websocket配置
+	function websocketConfig() {
+		//連接url爲endpointChat的endpoint,對應後臺WebSoccketConfig的配置
+		sock = new SockJS("${webPath}contactChatSocket");
+		sockHandle();
+		stompConfig();
+	}
+
+
+
+	function stompConfig() {
+		//使用STOMP子協議的websocket客戶端
+		stomp = Stomp.over(sock);
+		stomp.connect({accountId:'${accountId}'}, function(frame) {
+			//這裏的訂閱地址和controller的convertAndSendToUser地址一致，多出的user必須的，指的是用戶之間發送消息
+			//這裏的地址和後臺的Controller sendChatMsg方法的chatAddress 一致
+			stomp.subscribe("/user/${accountId}/queue/contactMessage${chatId}", function (message) {
+				//處理響應消息
+				var json = JSON.parse(message.body);
+				console.log(json);
+
+			});
+
+			//訂閱處理錯誤的消息地址,接收錯誤消息
+			stomp.subscribe("/user/${accountId}/queue/contactErrors${chatId}", function (message) {
+				var response = JSON.parse(message.body);
+				var error = response.error;
+				alert("發送失敗"+error);
+			});
+		});
+	}
+
+
+
+	//發送消息
+	function sendMessage() {
+		//文本框的內容
+		var content =  $("#content").val();
+		if ($.trim($("#content").val()).length <= 0){
+			return ;
+		}
+		//拼接成json傳到後臺
+		var data = {
+			chatId:'${chatId}',
+			schoolId:'${schoolId}',
+			toUserId:'${receiverId}',
+			content:content,
+			fromUserId:'${accountId}',
+			appId:'${appId}',
+			msgType:1
+		};
+		//發送
+		stomp.send("/sendChatMsg",{},JSON.stringify(data) );
+	}
+
+
+
+	function sockHandle() {
+		sock.onopen = function () {
+			console.log("------連接成功------");
+		};
+		sock.onmessage = function (event) {
+			console.log('-------Received: ' + event.data);
+		};
+		sock.onclose = function (event) {
+			console.log('--------Info: connection closed.------');
+		};
+		//連接發生錯誤
+		sock.onerror = function () {
+			alert("連接錯誤", "網絡超時或通訊地址錯誤.");
+			disconnect();
+		} ;
+	}
+
+
+
+	//關閉websocket
+	function disconnect() {
+		if (sock != null) {
+			sock.close();
+			sock = null;
+		}
+	}

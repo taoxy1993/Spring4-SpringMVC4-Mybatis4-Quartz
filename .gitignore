@@ -1,0 +1,6 @@
+/.idea
+*.iml
+/src/main/resources/environment/
+/target
+/src/main/resources/*.properties
+*.properties

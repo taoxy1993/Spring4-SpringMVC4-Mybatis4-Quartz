@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dfs.mapper.SenseAgroSpecialistMapper">
+    <resultMap id="BaseResultMap" type="com.dfs.entity.SenseAgroSpecialist">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="avater" property="avater" jdbcType="VARCHAR"/>
+        <result column="mark" property="mark" jdbcType="VARCHAR"/>
+        <result column="visit" property="visit" jdbcType="INTEGER"/>
+        <result column="crop_name" property="cropName" jdbcType="VARCHAR"/>
+        <result column="work_age" property="workAge" jdbcType="INTEGER"/>
+        <result column="area" property="area" jdbcType="VARCHAR"/>
+        <result column="origin_price" property="originPrice" jdbcType="DECIMAL"/>
+        <result column="adjust_price" property="adjustPrice" jdbcType="DECIMAL"/>
+        <result column="add_time" property="addTime" jdbcType="INTEGER"/>
+        <!--description-->
+        <result column="uname" property="uname" jdbcType="VARCHAR"/>
+        <result column="passwd" property="passwd" jdbcType="VARCHAR"/>
+        <result column="cover_image" property="coverImage" jdbcType="VARCHAR"/>
+        <result column="skill" property="skill" jdbcType="VARCHAR"/>
+        <result column="time_show" property="timeShow" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.dfs.entity.SenseAgroSpecialist" extends="BaseResultMap">
+        <result column="is_online" property="isOnline" jdbcType="BIT"/>
+        <result column="description" property="description" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+    <select id="findUserBynameAndPasswd" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        from sense_agro_specialist
+        where uname = #{uname,jdbcType=VARCHAR} and passwd=#{passwd,jdbcType=VARCHAR}
+    </select>
+    <select id="findDuplicateUNameCount" resultType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from sense_agro_specialist
+        where uname = #{uname,jdbcType=VARCHAR}
+        <if test="excludeId != null">
+            and id != #{excludeId,jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="specialistTotal" resultType="java.lang.Integer">
+		select
+		 ifnull(count(id), 0)
+		from sense_agro_specialist
+	</select>
+    <select id="showSpecialistList" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>,
+        <include refid="Blob_Column_List"/>
+        from sense_agro_specialist
+        order by is_online desc,
+        time_show desc
+        limit #{page} , #{per}
+    </select>
+    <sql id="Example_Where_Clause"></sql>
+    <sql id="selectByModelWhereClause">
+        <where>
+            <if test="model.id != null and model.id != -1">
+                and id=#{model.id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    id, name, avater, mark, visit, crop_name, work_age, area, origin_price, adjust_price, 
+    add_time, uname, passwd, cover_image, skill,time_show
+  </sql>
+    <sql id="Blob_Column_List">
+    description,is_online
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from sense_agro_specialist
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sense_agro_specialist
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.dfs.entity.SenseAgroSpecialist">
+    insert into sense_agro_specialist (id, name, avater, 
+      mark, visit, crop_name, 
+      work_age, area, origin_price, 
+      adjust_price, add_time, uname, 
+      passwd, description, is_online,cover_image, skill,time_show)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{avater,jdbcType=VARCHAR}, 
+      #{mark,jdbcType=VARCHAR}, #{visit,jdbcType=INTEGER}, #{cropName,jdbcType=VARCHAR}, 
+      #{workAge,jdbcType=INTEGER}, #{area,jdbcType=VARCHAR}, #{originPrice,jdbcType=DECIMAL}, 
+      #{adjustPrice,jdbcType=DECIMAL}, #{addTime,jdbcType=INTEGER}, #{uname,jdbcType=VARCHAR}, 
+      #{passwd,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR},#{isOnline,jdbcType=BIT}, #{coverImage,jdbcType=VARCHAR}, #{skill,jdbcType=VARCHAR}, #{timeShow,jdbcType=INTEGER})
+  </insert>
+    <insert id="insertSelective" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.dfs.entity.SenseAgroSpecialist">
+        insert into sense_agro_specialist
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="avater != null">
+                avater,
+            </if>
+            <if test="mark != null">
+                mark,
+            </if>
+            <if test="visit != null">
+                visit,
+            </if>
+            <if test="cropName != null">
+                crop_name,
+            </if>
+            <if test="workAge != null">
+                work_age,
+            </if>
+            <if test="area != null">
+                area,
+            </if>
+            <if test="originPrice != null">
+                origin_price,
+            </if>
+            <if test="adjustPrice != null">
+                adjust_price,
+            </if>
+            <if test="addTime != null">
+                add_time,
+            </if>
+            <if test="uname != null">
+                uname,
+            </if>
+            <if test="passwd != null">
+                passwd,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="isOnline != null">
+                is_online,
+            </if>
+            <if test="coverImage != null">
+                cover_image,
+            </if>
+            <if test="skill != null">
+                skill,
+            </if>
+            <if test="timeShow != null">
+                time_show,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="avater != null">
+                #{avater,jdbcType=VARCHAR},
+            </if>
+            <if test="mark != null">
+                #{mark,jdbcType=VARCHAR},
+            </if>
+            <if test="visit != null">
+                #{visit,jdbcType=INTEGER},
+            </if>
+            <if test="cropName != null">
+                #{cropName,jdbcType=INTEGER},
+            </if>
+            <if test="workAge != null">
+                #{workAge,jdbcType=INTEGER},
+            </if>
+            <if test="area != null">
+                #{area,jdbcType=VARCHAR},
+            </if>
+            <if test="originPrice != null">
+                #{originPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="adjustPrice != null">
+                #{adjustPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="addTime != null">
+                #{addTime,jdbcType=INTEGER},
+            </if>
+            <if test="uname != null">
+                #{uname,jdbcType=VARCHAR},
+            </if>
+            <if test="passwd != null">
+                #{passwd,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="isOnline != null">
+                #{isOnline,jdbcType=BIT},
+            </if>
+            <if test="coverImage != null">
+                #{coverImage,jdbcType=VARCHAR},
+            </if>
+            <if test="skill != null">
+                #{skill,jdbcType=VARCHAR},
+            </if>
+            <if test="timeShow != null">
+                #{timeShow,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dfs.entity.SenseAgroSpecialist">
+        update sense_agro_specialist
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="avater != null">
+                avater = #{avater,jdbcType=VARCHAR},
+            </if>
+            <if test="mark != null">
+                mark = #{mark,jdbcType=VARCHAR},
+            </if>
+            <if test="visit != null">
+                visit = #{visit,jdbcType=INTEGER},
+            </if>
+            <if test="cropName != null">
+                crop_name = #{cropName,jdbcType=INTEGER},
+            </if>
+            <if test="workAge != null">
+                work_age = #{workAge,jdbcType=INTEGER},
+            </if>
+            <if test="area != null">
+                area = #{area,jdbcType=VARCHAR},
+            </if>
+            <if test="originPrice != null">
+                origin_price = #{originPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="adjustPrice != null">
+                adjust_price = #{adjustPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="addTime != null">
+                add_time = #{addTime,jdbcType=INTEGER},
+            </if>
+            <if test="uname != null">
+                uname = #{uname,jdbcType=VARCHAR},
+            </if>
+            <if test="passwd != null">
+                passwd = #{passwd,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="isOnline != null">
+                is_online = #{isOnline,jdbcType=BIT},
+            </if>
+            <if test="coverImage != null">
+                cover_image = #{coverImage,jdbcType=VARCHAR},
+            </if>
+            <if test="skill != null">
+                skill = #{skill,jdbcType=VARCHAR},
+            </if>
+            <if test="timeShow != null">
+                time_show = #{timeShow,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dfs.entity.SenseAgroSpecialist">
+    update sense_agro_specialist
+    set name = #{name,jdbcType=VARCHAR},
+      avater = #{avater,jdbcType=VARCHAR},
+      mark = #{mark,jdbcType=VARCHAR},
+      visit = #{visit,jdbcType=INTEGER},
+      crop_name = #{cropName,jdbcType=VARCHAR},
+      work_age = #{workAge,jdbcType=INTEGER},
+      area = #{area,jdbcType=VARCHAR},
+      origin_price = #{originPrice,jdbcType=DECIMAL},
+      adjust_price = #{adjustPrice,jdbcType=DECIMAL},
+      add_time = #{addTime,jdbcType=INTEGER},
+      uname = #{uname,jdbcType=VARCHAR},
+      passwd = #{passwd,jdbcType=VARCHAR},
+      description = #{description,jdbcType=LONGVARCHAR},
+      is_online = #{isOnline,jdbcType=BIT},
+      skill = #{skill,jdbcType=VARCHAR},
+      time_show = #{timeShow,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.dfs.entity.SenseAgroSpecialist">
+    update sense_agro_specialist
+    set name = #{name,jdbcType=VARCHAR},
+      avater = #{avater,jdbcType=VARCHAR},
+      mark = #{mark,jdbcType=VARCHAR},
+      visit = #{visit,jdbcType=INTEGER},
+      crop_name = #{cropName,jdbcType=VARCHAR},
+      work_age = #{workAge,jdbcType=INTEGER},
+      area = #{area,jdbcType=VARCHAR},
+      origin_price = #{originPrice,jdbcType=DECIMAL},
+      adjust_price = #{adjustPrice,jdbcType=DECIMAL},
+      add_time = #{addTime,jdbcType=INTEGER},
+      uname = #{uname,jdbcType=VARCHAR},
+      passwd = #{passwd,jdbcType=VARCHAR},
+      skill = #{skill,jdbcType=VARCHAR},
+      time_show = #{timeShow,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+   </update>
+
+
+    <select id="selectByModel" resultMap="ResultMapWithBLOBs">
+        select
+        sp.id, sp.name, sp.avater, sp.mark, sp.visit, sp.crop_name, sp.work_age, sp.area, sp.origin_price,
+        sp.adjust_price, sp.add_time, sp.uname, sp.passwd, sp.description, sp.is_online,sp.cover_image,
+        sp.skill,sp.time_show
+        from sense_agro_specialist sp
+        <include refid="selectByModelWhereClause"/>
+        order by time_show
+        desc
+        limit #{page} , #{per}
+    </select>
+</mapper>

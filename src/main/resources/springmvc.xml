@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd     
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+    <!-- 启用注解扫描，并定义组件查找规则 ，mvc层只负责扫描@Controller、@ControllerAdvice -->
+    <!-- base-package 如果多个，用“,”分隔 -->
+    <!--<import resource="spring-redis.xml"/>-->
+    <context:component-scan base-package="com.dfs" use-default-filters="false">
+        <!-- 扫描@Controller -->
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <!-- 控制器增强，使一个Contoller成为全局的异常处理类，类中用@ExceptionHandler方法注解的方法可以处理所有Controller发生的异常 -->
+        <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+    <!-- 支持Controller的AOP代理 -->
+    <aop:aspectj-autoproxy/>
+    <!-- 扫描包 -->
+    <context:component-scan base-package="com.dfs.websocket"/>
+    <!--解决乱码问题-->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json;charset=utf-8</value>
+                        <value>text/html;charset=utf-8</value>
+                        <!-- application 可以在任意 form 表单里面 enctype 属性默认找到 -->
+                        <value>application/x-www-form-urlencoded;charset=utf-8</value>
+                        <value>multipart/form-data;charset=utf-8</value>
+                        <value>application/x-www-form-urlencoded</value>
+                        <value>text/plain;charset=utf-8</value>
+                    </list>
+                </property>
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <!-- 会自动注册RequestMappingHandlerMapping与RequestMappingHandlerAdapter两个Bean，
+        这是SpringMVC为@Controllers分发请求所必需的，并提供了数据绑定支持、@NumberFormatannotation支持、 @DateTimeFormat支持、@Valid支持、读写XML的支持和读写JSON的支持等功能。 -->
+    <mvc:annotation-driven/>
+    <!-- 使用默认的Servlet来响应静态文件 -->
+    <mvc:default-servlet-handler/>
+    <!-- 加载静态文件 -->
+    <mvc:resources location="/WEB-INF/plugins/" mapping="/WEB-INF/plugins/**"/>
+    <!-- 视图解析器 -->
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 前缀 -->
+        <property name="prefix">
+            <value>/WEB-INF/</value>
+        </property>
+        <!-- 后缀 -->
+        <property name="suffix">
+            <value>.html</value>
+        </property>
+    </bean>
+    <!--文件上传-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>
+    <!-- 注意：CommonsMultipartResolver的id是固定不变的，一定是multipartResolver，不可修改 -->
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        &lt;!&ndash; 如果上传后出现文件名中文乱码可以使用该属性解决 &ndash;&gt;
+        <property name="defaultEncoding" value="utf-8"/>
+        &lt;!&ndash; 单位是字节，不设置默认不限制总的上传文件大小，这里设置总的上传文件大小不超过1M（1*1024*1024） &ndash;&gt;
+        <property name="maxUploadSize" value="524288000"/>
+        &lt;!&ndash; 跟maxUploadSize差不多，不过maxUploadSizePerFile是限制每个上传文件的大小，而maxUploadSize是限制总的上传文件大小 &ndash;&gt;
+        <property name="maxUploadSizePerFile" value="209715200"/>
+    </bean>-->
+</beans>

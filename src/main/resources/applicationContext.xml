@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:task="http://www.springframework.org/schema/task" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd
+           http://mybatis.org/schema/mybatis-spring 
+		   http://mybatis.org/schema/mybatis-spring.xsd
+		   http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+           http://www.springframework.org/schema/task  
+			http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+	<!-- 隐式地向 Spring容器注册AutowiredAnnotationBeanPostProcessor、RequiredAnnotationBeanPostProcessor、
+		CommonAnnotationBeanPostProcessor以及PersistenceAnnotationBeanPostProcessor这4个BeanPostProcessor。 -->
+	<!-- <context:component-scan />标签也包含了自动注入上述processor的功能，因此其可以省略 -->
+	<!-- <context:annotation-config /> -->
+	<task:annotation-driven/>  
+	<!-- 启用注解扫描，并定义组件查找规则 ，除了@controller，扫描所有的Bean -->
+	<context:component-scan base-package="com.dfs">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	<!-- 启用 @AspectJ -->
+	<aop:aspectj-autoproxy />
+	<!--注册Bean验证后处理器 -->
+	<bean
+		class="org.springframework.validation.beanvalidation.BeanValidationPostProcessor" />
+	<!--注册方法验证的后处理器 -->
+	<bean
+		class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor" />
+    <!-- mybatis:scan会将com.dfs.mapper包里的所有接口当作mapper配置，之后可以自动引入mapper类 -->
+    <mybatis:scan base-package="com.dfs.mapper"/>
+	<!-- 加载读取property配置文件 ,PropertyPlaceholderConfigurer(容器后处理器)支持从properties文件中读入配置并注入到bean中 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<!-- 可从jvm虚拟机的参数中获得配置信息 -->
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:src/main/resources/environment/${env}.properties</value>
+				<value>classpath:sysConfig.properties</value>
+			</list>
+		</property>
+	</bean>
+	<!-- Mybatis数据库配置 -->
+	<!-- 配置数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+	<!-- JDBC事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- restTemplate -->
+	<bean id="RestTemplate" class="org.springframework.web.client.RestTemplate">
+		<constructor-arg index="0">
+			<list>
+				<bean id="byteArrayHttpMessageConverter" class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+				<bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+					<constructor-arg value="UTF-8"></constructor-arg>
+				</bean>
+				<bean id="resourceHttpMessageConverter" class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
+				<bean id="sourceHttpMessageConverter" class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+				<bean id="allEncompassingFormHttpMessageConverter" class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
+				<bean id="jaxb2RootElementHttpMessageConverter" class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter"/>
+				<bean id="mappingJackson2HttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	<!-- 配置 sqlSessionFactory -->
+	<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 数据源的设置 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 配置Mybatis的核心 配置文件 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"/>
+	</bean>
+    <!-- 第三种 Mapper动态代理开发(mapper和dao须放在同一个包下并且名字相同)并且支持扫描-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 基础包 包下所的接口全扫描  -->
+        <property name="basePackage" value="com.dfs.mapper"/>
+        <!-- 注入工厂 -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+    <!-- 启用支持annotation注解方式事务管理 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
